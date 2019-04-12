@@ -10,16 +10,34 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
+				"command": "extension.quickMakeDir",
+				"title": "Hello World1"
+			},
+			{
+				"command": "extension.quickMakePlayer",
+				"title": "Hello World2"
 			}
-		]
+		  ],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "extension.quickMakeDir",
+					"when": "explorerResourceIsFolder",
+					"group": "ZpoQuickMakeDir@1"
+				},
+				{
+					"command": "extension.quickMakePlayer",
+					"when": "explorerResourceIsFolder",
+					"group": "ZpoQuickMakeDir@2"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
