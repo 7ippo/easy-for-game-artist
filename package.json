@@ -1,7 +1,7 @@
 {
-	"name": "helloworld",
-	"displayName": "Helloworld",
-	"description": "",
+	"name": "easymakedir",
+	"displayName": "QuickMDForArtists",
+	"description": "Written by zpo",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.33.0"
@@ -16,25 +16,61 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.quickMakeDir",
-				"title": "Hello World1"
+				"command": "extension.quickMakePlayerDir",
+				"title": "创建player资源目录"
 			},
 			{
-				"command": "extension.quickMakePlayer",
-				"title": "Hello World2"
+				"command": "extension.quickMakeNpcDir",
+				"title": "创建npc资源目录"
+			},
+			{
+				"command": "extension.quickMakeMonsterDir",
+				"title": "创建monster资源目录"
+			},
+			{
+				"command": "extension.quickMakeMountDir",
+				"title": "创建mount资源目录"
+			},
+			{
+				"command": "extension.quickMakeDouhunDir",
+				"title": "创建douhun资源目录"
+			},
+			{
+				"command": "extension.quickMakeShbbDir",
+				"title": "创建shbb资源目录"
 			}
 		  ],
 		"menus": {
 			"explorer/context": [
 				{
-					"command": "extension.quickMakeDir",
+					"command": "extension.quickMakePlayerDir",
 					"when": "explorerResourceIsFolder",
 					"group": "ZpoQuickMakeDir@1"
 				},
 				{
-					"command": "extension.quickMakePlayer",
+					"command": "extension.quickMakeNpcDir",
 					"when": "explorerResourceIsFolder",
 					"group": "ZpoQuickMakeDir@2"
+				},
+				{
+					"command": "extension.quickMakeMonsterDir",
+					"when": "explorerResourceIsFolder",
+					"group": "ZpoQuickMakeDir@3"
+				},
+				{
+					"command": "extension.quickMakeMountDir",
+					"when": "explorerResourceIsFolder",
+					"group": "ZpoQuickMakeDir@4"
+				},
+				{
+					"command": "extension.quickMakeDouhunDir",
+					"when": "explorerResourceIsFolder",
+					"group": "ZpoQuickMakeDir@5"
+				},
+				{
+					"command": "extension.quickMakeShbbDir",
+					"when": "explorerResourceIsFolder",
+					"group": "ZpoQuickMakeDir@6"
 				}
 			]
 		}
