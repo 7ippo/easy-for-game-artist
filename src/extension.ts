@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension is now active!');
+	console.log('easymakingdir is now active!');
 
 	const playerDir: dirData = {
 		'stat': ['0', '45', '90', '135', '180'],
@@ -54,7 +54,9 @@ export function activate(context: vscode.ExtensionContext) {
 		'skill': ['45', '135'],
 		'jump': ['0', '45', '90', '135', '180'],
 		'hitdown': ['45', '135'],
-		'cbtskill': []
+		'htskill1': ['at/45', 'at/135', 'hit/45', 'hit/135'],
+		'htskill2': ['at/45', 'at/135', 'hit/45', 'hit/135'],
+		'htskill3': ['at/45', 'at/135', 'hit/45', 'hit/135']
 	};
 
 	const npcDir: dirData = {
