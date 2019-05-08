@@ -39,6 +39,10 @@
 			{
 				"command": "extension.quickMakeShbbDir",
 				"title": "创建shbb资源目录"
+			},
+			{
+				"command": "extension.quickClassifyFrames",
+				"title": "根据Json配置自动归类序列帧"
 			}
 		  ],
 		"menus": {
@@ -72,6 +76,11 @@
 					"command": "extension.quickMakeShbbDir",
 					"when": "explorerResourceIsFolder",
 					"group": "ZpoQuickMakeDir@6"
+				},
+				{
+					"command": "extension.quickClassifyFrames",
+					"when": "explorerResourceIsFolder",
+					"group": "ZpoQuickClassifyFrames@1"
 				}
 			]
 		}

@@ -115,12 +115,12 @@ export function activate(context: vscode.ExtensionContext) {
 	let disposable6 = vscode.commands.registerCommand('extension.quickMakeShbbDir', async (fileUri) => {
 		loopMakingDir(shbbDir, fileUri.fsPath);
 	});
-	context.subscriptions.push(disposable);
-	context.subscriptions.push(disposable2);
-	context.subscriptions.push(disposable3);
-	context.subscriptions.push(disposable4);
-	context.subscriptions.push(disposable5);
-	context.subscriptions.push(disposable6);
+
+	let disposable7 = vscode.commands.registerCommand('extension.quickClassifyFrames', async (fileUri) => {
+		console.log(fileUri.fsPath);
+	});
+	
+	context.subscriptions.push(disposable, disposable2, disposable3, disposable4, disposable5, disposable6, disposable7);
 }
 
 // this method is called when your extension is deactivated
