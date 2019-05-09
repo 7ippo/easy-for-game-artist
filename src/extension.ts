@@ -3,12 +3,23 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import { type } from 'os';
 
 type dirData = {
 	[index: string]: string[];
 };
 
-function makeDirRecursively(dir:string) {
+type jsonConfig = {
+	name: string,
+	directions: string[],
+	length: number
+};
+
+type jsonFile = {
+	struct: jsonConfig[]
+};
+
+function makeDirRecursively(dir: string) {
 	if (fs.existsSync(dir)) { return; }
 	if (!fs.existsSync(path.dirname(dir))) {
 		makeDirRecursively(path.dirname(dir));
@@ -20,7 +31,7 @@ function makeDirRecursively(dir:string) {
 	}
 }
 
-function loopMakingDir(data:dirData, base_path:string){
+function loopMakingDir(data: dirData, base_path: string) {
 	for (const dir of Object.keys(data)) {
 		if (data[dir].length === 0) {
 			let path: string = base_path + '/' + dir;
@@ -34,6 +45,64 @@ function loopMakingDir(data:dirData, base_path:string){
 			makeDirRecursively(path);
 		}
 	}
+}
+
+function ReadJsonConfig(path: string):jsonFile {
+	let fileContent = fs.readFileSync(path, {encoding:"utf-8"});
+	try {
+		return JSON.parse(fileContent);
+	} catch (error) {
+		vscode.window.showErrorMessage('config.json解析失败\n' + error);
+		throw error;
+	}
+}
+
+function GetFramesArray(base_path: string): string[] | null {
+	let framesReg = new RegExp('^\\d{5}.png$');
+	let configReg = new RegExp('^config.json$');
+	let hasConfigJson = false;
+	let frames: string[] = [];
+
+	if (fs.existsSync(base_path)) {
+		let files = fs.readdirSync(base_path);
+		files.forEach(element => {
+			let fullname = path.join(base_path,element);
+			let stats = fs.statSync(fullname);
+			// 把序列帧依次塞进队列
+			if (stats.isFile() && framesReg.test(element)){
+				frames.push(element);
+			}
+			if (configReg.test(element)) {
+				hasConfigJson = true;
+			}
+		});
+		if (!hasConfigJson) {
+			vscode.window.showErrorMessage('请先配置config.json');
+			return null;
+		}
+		return frames;
+	}else{
+		return null;
+	}
+	
+}
+
+function ClassifyFrames(base_path: string, frames: string[], json_config: jsonFile) {
+	let frameCount: number = 0;
+	json_config.struct.forEach(dir => {
+		let length = dir.length;
+		dir.directions.forEach(direction => {
+			for (let i = 0; i < length ; i++, frameCount++) {
+				let old_file = path.join(base_path, frames[frameCount]);
+				let new_file = path.join(base_path, dir.name, direction, frames[frameCount]);
+				fs.rename(old_file, new_file, (err) => {
+					if (err) {
+						throw err;
+					}
+				});
+			}
+		});
+	});
 }
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -118,9 +187,26 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let disposable7 = vscode.commands.registerCommand('extension.quickClassifyFrames', async (fileUri) => {
 		console.log(fileUri.fsPath);
+		let frames: string[]|null = GetFramesArray(fileUri.fsPath);
+		if (!frames) {
+			return;
+		}
+		// 检查一下Json配置的序列帧数量是否正确
+		let config = ReadJsonConfig(path.join(fileUri.fsPath, 'config.json'));
+		let count = 0;
+		config.struct.forEach(element => {
+			count += element.directions.length * element.length;
+		});
+		if (count > frames.length) {
+			vscode.window.showWarningMessage('请检查config.json配置中序列帧的数量与文件夹下序列帧数量是否一致，当前配置会导致遍历越界');
+			return;
+		}
+
+		ClassifyFrames(fileUri.fsPath, frames, config);
 	});
 	
-	context.subscriptions.push(disposable, disposable2, disposable3, disposable4, disposable5, disposable6, disposable7);
+	context.subscriptions.push(disposable, disposable2, 
+		disposable3, disposable4, disposable5, disposable6, disposable7);
 }
 
 // this method is called when your extension is deactivated
