@@ -136,7 +136,7 @@ export function activate(context: vscode.ExtensionContext) {
 		'stat': ['45', '135'],
 		'behit': ['45', '135'],
 		'dead': ['45', '135'],
-		'run': ['45', '135'],
+		'run': ['0', '45', '90', '135', '180'],
 		'attack': ['45', '135']
 	};
 

@@ -3,7 +3,7 @@
 	"publisher": "zpo",
 	"displayName": "QuickMDForArtists",
 	"description": "Written by zpo",
-	"version": "0.0.2",
+	"version": "0.0.4",
 	"engines": {
 		"vscode": "^1.33.0"
 	},
