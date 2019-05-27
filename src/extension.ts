@@ -3,20 +3,29 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { type } from 'os';
 
 type dirData = {
 	[index: string]: string[];
 };
 
-type jsonConfig = {
+type framesConfig = {
 	name: string,
 	directions: string[],
 	length: number
 };
 
-type jsonFile = {
-	struct: jsonConfig[]
+type framesJsonFile = {
+	struct: framesConfig[]
+};
+
+type dirConstructFile = {
+	"playerDir"	: 	dirData,
+	"npcDir"	: 	dirData,
+	"monsterDir": 	dirData,
+	"mountDir"	: 	dirData,
+	"douhunDir"	: 	dirData,
+	"shbbDir"	: 	dirData,
+
 };
 
 function makeDirRecursively(dir: string) {
@@ -47,12 +56,22 @@ function loopMakingDir(data: dirData, base_path: string) {
 	}
 }
 
-function ReadJsonConfig(path: string):jsonFile {
+function ReadFramesConfig(path: string): framesJsonFile{
 	let fileContent = fs.readFileSync(path, {encoding:"utf-8"});
 	try {
 		return JSON.parse(fileContent);
 	} catch (error) {
-		vscode.window.showErrorMessage('config.json解析失败\n' + error);
+		vscode.window.showErrorMessage(path + ' json解析失败\n' + error);
+		throw error;
+	}
+}
+
+function ReadDirConstructConfig(path: string): dirConstructFile{
+	let fileContent = fs.readFileSync(path, {encoding:"utf-8"});
+	try {
+		return JSON.parse(fileContent);
+	} catch (error) {
+		vscode.window.showErrorMessage(path + ' json解析失败\n' + error);
 		throw error;
 	}
 }
@@ -87,7 +106,7 @@ function GetFramesArray(base_path: string): string[] | null {
 	
 }
 
-function ClassifyFrames(base_path: string, frames: string[], json_config: jsonFile) {
+function ClassifyFrames(base_path: string, frames: string[], json_config: framesJsonFile) {
 	let frameCount: number = 0;
 	json_config.struct.forEach(dir => {
 		let length = dir.length;
@@ -112,87 +131,13 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('easymakingdir is now active!');
 
-	const playerDir: dirData = {
-		'stat': ['0', '45', '90', '135', '180'],
-		'behit': ['45', '135'],
-		'dead': ['45', '135'],
-		'run': ['0', '45', '90', '135', '180'],
-		'ride_stat': ['45', '135'],
-		'ride_run': ['45', '135'],
-		'attack': ['45', '135'],
-		'skill': ['45', '135'],
-		'jump': ['0', '45', '90', '135', '180'],
-		'hitdown': ['45', '135'],
-		'htskill1': ['at/45', 'at/135', 'hit/45', 'hit/135'],
-		'htskill2': ['at/45', 'at/135', 'hit/45', 'hit/135'],
-		'htskill3': ['at/45', 'at/135', 'hit/45', 'hit/135']
-	};
-
-	const npcDir: dirData = {
-		'stat': ['45', '135']
-	};
-
-	const monsterDir: dirData = {
-		'stat': ['45', '135'],
-		'behit': ['45', '135'],
-		'dead': ['45', '135'],
-		'run': ['0', '45', '90', '135', '180'],
-		'attack': ['45', '135']
-	};
-
-	const mountDir: dirData = {
-		'stat': ['45', '135'],
-		'stat_up': ['45', '135'],
-		'run': ['45', '135'],
-		'run_up': ['45', '135']
-	};
-
-	const douhunDir: dirData = {
-		'stat': ['0', '45', '90', '135', '180'],
-		'run': ['0', '45', '90', '135', '180']
-	};
-
-	const shbbDir: dirData = {
-		'stat': ['0', '45', '90', '135', '180'],
-		'run': ['0', '45', '90', '135', '180'],
-		'attack': ['45', '135']
-	};
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('extension.quickMakePlayerDir', async (fileUri) => {
-		loopMakingDir(playerDir, fileUri.fsPath);
-	});
-
-	let disposable2 = vscode.commands.registerCommand('extension.quickMakeNpcDir', async (fileUri) => {
-		loopMakingDir(npcDir, fileUri.fsPath);
-	});
-
-	let disposable3 = vscode.commands.registerCommand('extension.quickMakeMonsterDir', async (fileUri) => {
-		loopMakingDir(monsterDir, fileUri.fsPath);
-	});
-
-	let disposable4 = vscode.commands.registerCommand('extension.quickMakeMountDir', async (fileUri) => {
-		loopMakingDir(mountDir, fileUri.fsPath);
-	});
-
-	let disposable5 = vscode.commands.registerCommand('extension.quickMakeDouhunDir', async (fileUri) => {
-		loopMakingDir(douhunDir, fileUri.fsPath);
-	});
-
-	let disposable6 = vscode.commands.registerCommand('extension.quickMakeShbbDir', async (fileUri) => {
-		loopMakingDir(shbbDir, fileUri.fsPath);
-	});
-
 	let disposable7 = vscode.commands.registerCommand('extension.quickClassifyFrames', async (fileUri) => {
-		console.log(fileUri.fsPath);
 		let frames: string[]|null = GetFramesArray(fileUri.fsPath);
 		if (!frames) {
 			return;
 		}
 		// 检查一下Json配置的序列帧数量是否正确
-		let config = ReadJsonConfig(path.join(fileUri.fsPath, 'config.json'));
+		let config = ReadFramesConfig(path.join(fileUri.fsPath, 'config.json'));
 		let count = 0;
 		config.struct.forEach(element => {
 			count += element.directions.length * element.length;
@@ -204,9 +149,104 @@ export function activate(context: vscode.ExtensionContext) {
 
 		ClassifyFrames(fileUri.fsPath, frames, config);
 	});
+
+	context.subscriptions.push(disposable7);
+	vscode.window.showInformationMessage('快速归类序列帧功能已启用');
+
+	// Read Default Directory Construction from JSON
+	const dirConstructFilePath: string = "d:\\dirConstruct.json";
+
+	if (fs.existsSync(dirConstructFilePath)){
+		let config: dirConstructFile = ReadDirConstructConfig(dirConstructFilePath);
+		const playerDir: dirData = config.playerDir;
+		const npcDir: dirData = config.npcDir;
+		const monsterDir: dirData = config.monsterDir;
+		const mountDir: dirData = config.mountDir;
+		const douhunDir: dirData = config.douhunDir;
+		const shbbDir: dirData = config.shbbDir;
+
+		let disposable = vscode.commands.registerCommand('extension.quickMakePlayerDir', async (fileUri) => {
+			loopMakingDir(playerDir, fileUri.fsPath);
+		});
 	
-	context.subscriptions.push(disposable, disposable2, 
-		disposable3, disposable4, disposable5, disposable6, disposable7);
+		let disposable2 = vscode.commands.registerCommand('extension.quickMakeNpcDir', async (fileUri) => {
+			loopMakingDir(npcDir, fileUri.fsPath);
+		});
+	
+		let disposable3 = vscode.commands.registerCommand('extension.quickMakeMonsterDir', async (fileUri) => {
+			loopMakingDir(monsterDir, fileUri.fsPath);
+		});
+	
+		let disposable4 = vscode.commands.registerCommand('extension.quickMakeMountDir', async (fileUri) => {
+			loopMakingDir(mountDir, fileUri.fsPath);
+		});
+	
+		let disposable5 = vscode.commands.registerCommand('extension.quickMakeDouhunDir', async (fileUri) => {
+			loopMakingDir(douhunDir, fileUri.fsPath);
+		});
+	
+		let disposable6 = vscode.commands.registerCommand('extension.quickMakeShbbDir', async (fileUri) => {
+			loopMakingDir(shbbDir, fileUri.fsPath);
+		});
+	
+		context.subscriptions.push(disposable, disposable2, 
+			disposable3, disposable4, disposable5, disposable6);
+		vscode.window.showInformationMessage('快速创建模板文件夹功能已启用');
+	}else{
+		vscode.window.showErrorMessage('找不到d:\\dirConstruct.json \n快速创建文件夹功能不会启用。请在该路径下添加json配置后重启VS Code以启用快速创建文件夹功能');
+		return;
+	}
+
+	// const playerDir: dirData = {
+	// 	'stat': ['0', '45', '90', '135', '180'],
+	// 	'behit': ['45', '135'],
+	// 	'dead': ['45', '135'],
+	// 	'run': ['0', '45', '90', '135', '180'],
+	// 	'ride_stat': ['45', '135'],
+	// 	'ride_run': ['45', '135'],
+	// 	'attack': ['45', '135'],
+	// 	'skill': ['45', '135'],
+	// 	'jump': ['0', '45', '90', '135', '180'],
+	// 	'hitdown': ['45', '135'],
+	// 	'htskill1': ['at/45', 'at/135', 'hit/45', 'hit/135'],
+	// 	'htskill2': ['at/45', 'at/135', 'hit/45', 'hit/135'],
+	// 	'htskill3': ['at/45', 'at/135', 'hit/45', 'hit/135']
+	// };
+
+	// const npcDir: dirData = {
+	// 	'stat': ['45', '135']
+	// };
+
+	// const monsterDir: dirData = {
+	// 	'stat': ['45', '135'],
+	// 	'behit': ['45', '135'],
+	// 	'dead': ['45', '135'],
+	// 	'run': ['0', '45', '90', '135', '180'],
+	// 	'attack': ['45', '135']
+	// };
+
+	// const mountDir: dirData = {
+	// 	'stat': ['45', '135'],
+	// 	'stat_up': ['45', '135'],
+	// 	'run': ['45', '135'],
+	// 	'run_up': ['45', '135']
+	// };
+
+	// const douhunDir: dirData = {
+	// 	'stat': ['0', '45', '90', '135', '180'],
+	// 	'run': ['0', '45', '90', '135', '180']
+	// };
+
+	// const shbbDir: dirData = {
+	// 	'stat': ['0', '45', '90', '135', '180'],
+	// 	'run': ['0', '45', '90', '135', '180'],
+	// 	'attack': ['45', '135']
+	// };
+
+	// The command has been defined in the package.json file
+	// Now provide the implementation of the command with registerCommand
+	// The commandId parameter must match the command field in package.json
+	
 }
 
 // this method is called when your extension is deactivated
