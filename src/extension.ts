@@ -1,5 +1,3 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -213,19 +211,14 @@ function EnableQuickMD(context: vscode.ExtensionContext, config_path: string) {
 	}
 }
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// This line of code will only be executed once when your extension is activated
 	console.log('easymakingdir is now active!');
-	let quickMD_config_path = path.join(path.dirname(context.globalStoragePath), "QuickPluginDirConstruct.json");
-	console.log("快速创建文件夹结构的Json配置位置在: " + quickMD_config_path);
+	let quickMD_config_path = context.asAbsolutePath('images/QuickPluginDirConstruct.json');
 
 	EnableClassify(context);
 	EnableQuickMD(context, quickMD_config_path);
 
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() { }

@@ -9,7 +9,9 @@ VS Code中资源管理器右键选择目录时，会弹出额外的上下文菜�
 Windows用户在
 > `C:\Users\[用户名]\AppData\Roaming\Code\User\globalStorage`
 
-目录下放置一个名为`QuickPluginDirConstruct.json`文件，插件会根据json配置来生成指定结构的目录。文件格式如下，注意一定要有playerDir,npcDir,monsterDir,mountDir,douhunDir,shbbDir这几个键值：  
+目录下放置一个名为`QuickPluginDirConstruct.json`文件，插件会根据json配置来生成指定结构的目录。文件格式如下，注意一定要有这几个键值：
+> `playerDir,npcDir,monsterDir,mountDir,douhunDir,shbbDir`
+
 ![jsonconfig](https://i.loli.net/2019/05/29/5cee4a9a03f3049118.png)
 
 ### **快速归类序列帧**

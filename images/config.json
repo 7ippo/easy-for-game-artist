@@ -1,0 +1,15 @@
+{ 
+    "struct": [
+        {
+            "name": "stat",
+            "directions": ["45", "135"],
+            "length": 2
+        
+        },
+        {
+            "name": "behit",
+            "directions": ["45", "135"],
+            "length": 3
+        }
+    ]
+}

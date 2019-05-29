@@ -3,7 +3,7 @@
 	"publisher": "zpo",
 	"displayName": "QuickMDPlugins",
 	"description": "Written by zpo",
-	"version": "0.0.4",
+	"version": "0.1.0",
 	"engines": {
 		"vscode": "^1.33.0"
 	},
