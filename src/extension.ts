@@ -123,15 +123,9 @@ function ClassifyFrames(base_path: string, frames: string[], json_config: frames
 		});
 	});
 }
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('easymakingdir is now active!');
-
-	let disposable7 = vscode.commands.registerCommand('extension.quickClassifyFrames', async (fileUri) => {
+function EnableClassify(context: vscode.ExtensionContext) {
+	let disposable = vscode.commands.registerCommand('extension.quickClassifyFrames', async (fileUri) => {
 		let frames: string[] | null = GetFramesArray(fileUri.fsPath);
 		if (!frames) {
 			return;
@@ -149,56 +143,87 @@ export function activate(context: vscode.ExtensionContext) {
 		ClassifyFrames(fileUri.fsPath, frames, config);
 	});
 
-	context.subscriptions.push(disposable7);
+	context.subscriptions.push(disposable);
 	vscode.window.showInformationMessage('快速归类序列帧功能已启用');
+	console.log('快速归类序列帧功能已启用');
+}
 
+function EnableQuickMD(context: vscode.ExtensionContext, config_path: string) {
 	// Read Default Directory Construction from JSON
-	const dirConstructFilePath: string = "d:\\dirConstruct.json";
+	if (fs.existsSync(config_path)) {
+		let config: dirConstructFile = ReadDirConstructConfig(config_path);
+		
+		const {playerDir, npcDir, monsterDir, mountDir, douhunDir, shbbDir} = config;
 
-	if (fs.existsSync(dirConstructFilePath)) {
-		let config: dirConstructFile = ReadDirConstructConfig(dirConstructFilePath);
-		const playerDir: dirData = config.playerDir;
-		const npcDir: dirData = config.npcDir;
-		const monsterDir: dirData = config.monsterDir;
-		const mountDir: dirData = config.mountDir;
-		const douhunDir: dirData = config.douhunDir;
-		const shbbDir: dirData = config.shbbDir;
-
-		let disposable = vscode.commands.registerCommand('extension.quickMakePlayerDir', async (fileUri) => {
-			loopMakingDir(playerDir, fileUri.fsPath);
+		let disposable1 = vscode.commands.registerCommand('extension.quickMakePlayerDir', async (fileUri) => {
+			if(playerDir) {
+				loopMakingDir(playerDir, fileUri.fsPath);
+			}else {
+				vscode.window.showErrorMessage('请检查json配置');
+			}
 		});
 
 		let disposable2 = vscode.commands.registerCommand('extension.quickMakeNpcDir', async (fileUri) => {
-			loopMakingDir(npcDir, fileUri.fsPath);
+			if(npcDir) {
+				loopMakingDir(npcDir, fileUri.fsPath);
+			}else {
+				vscode.window.showErrorMessage('请检查json配置');
+			}
 		});
 
 		let disposable3 = vscode.commands.registerCommand('extension.quickMakeMonsterDir', async (fileUri) => {
-			loopMakingDir(monsterDir, fileUri.fsPath);
+			if(monsterDir) {
+				loopMakingDir(monsterDir, fileUri.fsPath);
+			}else {
+				vscode.window.showErrorMessage('请检查json配置');
+			}
 		});
 
 		let disposable4 = vscode.commands.registerCommand('extension.quickMakeMountDir', async (fileUri) => {
-			loopMakingDir(mountDir, fileUri.fsPath);
+			if(mountDir) {
+				loopMakingDir(mountDir, fileUri.fsPath);
+			}else {
+				vscode.window.showErrorMessage('请检查json配置');
+			}
 		});
 
 		let disposable5 = vscode.commands.registerCommand('extension.quickMakeDouhunDir', async (fileUri) => {
-			loopMakingDir(douhunDir, fileUri.fsPath);
+			if(douhunDir) {
+				loopMakingDir(douhunDir, fileUri.fsPath);
+			}else {
+				vscode.window.showErrorMessage('请检查json配置');
+			}
 		});
 
 		let disposable6 = vscode.commands.registerCommand('extension.quickMakeShbbDir', async (fileUri) => {
-			loopMakingDir(shbbDir, fileUri.fsPath);
+			if(shbbDir) {
+				loopMakingDir(shbbDir, fileUri.fsPath);
+			}else {
+				vscode.window.showErrorMessage('请检查json配置');
+			}
 		});
 
-		context.subscriptions.push(disposable, disposable2,
+		context.subscriptions.push(disposable1, disposable2,
 			disposable3, disposable4, disposable5, disposable6);
 		vscode.window.showInformationMessage('快速创建模板文件夹功能已启用');
+		console.log('快速创建模板文件夹功能已启用');
 	} else {
-		vscode.window.showErrorMessage('找不到d:\\dirConstruct.json \n快速创建文件夹功能不会启用。请在该路径下添加json配置后重启VS Code以启用快速创建文件夹功能');
+		vscode.window.showErrorMessage('找不到' + config_path + '\n快速创建文件夹功能不会启用。请在该路径下添加json配置后重启VS Code以启用快速创建文件夹功能');
 		return;
 	}
+}
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
+// this method is called when your extension is activated
+// your extension is activated the very first time the command is executed
+export function activate(context: vscode.ExtensionContext) {
+
+	// This line of code will only be executed once when your extension is activated
+	console.log('easymakingdir is now active!');
+	let quickMD_config_path = path.join(path.dirname(context.globalStoragePath), "QuickPluginDirConstruct.json");
+	console.log("快速创建文件夹结构的Json配置位置在: " + quickMD_config_path);
+
+	EnableClassify(context);
+	EnableQuickMD(context, quickMD_config_path);
 
 }
 
